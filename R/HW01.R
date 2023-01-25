@@ -17,7 +17,7 @@ View(stns)
 
 #USC00445204
 WXData=meteo_pull_monitors(
-  monitors=stns[8,1],    # replace the *** with index you find
+  monitors=stns[8,1],    
   keep_flags = FALSE,
   date_min = "2022-01-01",
   date_max = "2022-12-31",
