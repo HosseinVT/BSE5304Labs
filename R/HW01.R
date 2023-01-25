@@ -1,6 +1,11 @@
 install.packages("pacman")
 pacman::p_load(rgdal, parallel, htsr, ggplot2, dplyr, patchwork, hrbrthemes, rnoaa, ggeasy, tibble, dplyr, scales )
 
+system("git config --global user.email 'h.ahmadi@vt.edu' ") 
+system("git config --global user.name 'HosseinVT' ")
+
+# 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
+
 HTlat <- 38.754919180319526
 HTlong <- -77.44796544507564
 
@@ -17,7 +22,7 @@ View(stns)
 
 #USC00445204
 WXData=meteo_pull_monitors(
-  monitors=stns[8,1],    
+  monitors=stns[8,1],    # replace the *** with index you find
   keep_flags = FALSE,
   date_min = "2022-01-01",
   date_max = "2022-12-31",
@@ -57,6 +62,7 @@ p <- ggplot(data, aes(x=day)) +
   
   
   scale_colour_manual(name ="",values = c("TMIN"="coral2", "TMAX"="cyan3", "PRCP"="darkolivegreen4"))
+
 
 plot (p)
 
