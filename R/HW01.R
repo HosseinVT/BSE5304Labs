@@ -4,7 +4,6 @@ pacman::p_load(rgdal, parallel, htsr, ggplot2, dplyr, patchwork, hrbrthemes, rno
 system("git config --global user.email 'h.ahmadi@vt.edu' ") 
 system("git config --global user.name 'HosseinVT' ")
 
-# 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
 
 
 HTlat <- 38.754919180319526
