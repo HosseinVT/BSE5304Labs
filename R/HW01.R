@@ -53,11 +53,10 @@ data <- data.frame(
 View(data)
 p <- ggplot(data, aes(x=day)) +
   
-  #geom_bar(aes(x=myflowgage$flowdata$mdate, y=myflowgage$flowdata$flow/5000),
-          # stat="identity", fill="goldenrod4")+
-  geom_line( aes(y=tmin, color="TMIN"), size=0.2) + 
-  geom_line( aes(y=tmax, color="TMAX"), size=0.2) + 
-  geom_line( aes(y=prcp / 1 , color="PRCP"), size=0.3) +
+ geom_line( aes(y=myflowgage$flowdata$flow/5000, color="FLOW"), size=0.5)+
+ geom_line( aes(y=tmin, color="TMIN"), size=0.2) + 
+ geom_line( aes(y=tmax, color="TMAX"), size=0.2) + 
+ geom_bar(aes(y=prcp, fill = "PRCP (mm)"), stat="identity")+
   
   coord_cartesian(ylim=c(-20,60))+
   scale_y_continuous(
@@ -66,7 +65,7 @@ p <- ggplot(data, aes(x=day)) +
     name = "Temperature (Celsius °)",
     
     # Add a second axis and specify its features
-    sec.axis = sec_axis(~.*1, name="Precipitation (Millimeter)")
+    sec.axis = sec_axis(~.*1, name="Streamflow/5000 (m^3/day)")
   ) + 
   
   theme_ipsum() +
@@ -79,8 +78,8 @@ p <- ggplot(data, aes(x=day)) +
   ggtitle(" Hometown Weather and Streamflow Data") +
   ggeasy::easy_center_title() +
   
-  scale_colour_manual(name ="",values = c("TMIN"="coral2", "TMAX"="cyan3", "PRCP"="darkolivegreen4" ))
-
+  scale_colour_manual(name ="", values = c("TMIN"="coral2", "TMAX"="cyan3", "FLOW"="goldenrod4" ))+
+  scale_fill_manual  (name ="", values = c("PRCP (mm)"="darkolivegreen4" ))
 
 plot (p)
 
