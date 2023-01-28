@@ -4,11 +4,14 @@ pacman::p_load(rgdal, parallel, htsr, ggplot2, dplyr, patchwork, hrbrthemes, rno
 system("git config --global user.email 'h.ahmadi@vt.edu' ") 
 system("git config --global user.name 'HosseinVT' ")
 
-# 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
 
+
+# Latitude and Longitude 
 
 HTlat <- 38.754919180319526
 HTlong <- -77.44796544507564
+
+# Weather Data
 
 stns=meteo_distance(
   station_data=ghcnd_stations(),
@@ -31,15 +34,30 @@ WXData=meteo_pull_monitors(
 )
 View(WXData)
 
+#USGS Data
+
+source("https://goo.gl/Cb8zGn")
+myflowgage_id="01658500"
+myflowgage=get_usgs_gage(myflowgage_id, begin_date="2022-01-01",end_date="2022-12-31")
+plot(myflowgage$flowdata$mdate,myflowgage$flowdata$flow,
+     main=myflowgage$gagename,xlab = "Date",
+     ylab="Flow m^3/day",type="l")
+barplot(myflowgage$flowdata$flow,main="USGS stream flow",
+        xlab="Day", ylab = "Flow m^3/day")
+
+# Plot
+
 data <- data.frame(
   day=WXData$date,tmin=WXData$tmin/10,tmax=WXData$tmax/10,prcp=WXData$prcp/10)
 
 View(data)
 p <- ggplot(data, aes(x=day)) +
   
-  geom_line( aes(y=tmin, color="TMIN"), size=0.3) + 
-  geom_line( aes(y=tmax, color="TMAX"), size=0.3) + 
-  geom_line( aes(y=prcp / 1 , color="PRCP"), size=1) +
+  #geom_bar(aes(x=myflowgage$flowdata$mdate, y=myflowgage$flowdata$flow/5000),
+          # stat="identity", fill="goldenrod4")+
+  geom_line( aes(y=tmin, color="TMIN"), size=0.2) + 
+  geom_line( aes(y=tmax, color="TMAX"), size=0.2) + 
+  geom_line( aes(y=prcp / 1 , color="PRCP"), size=0.3) +
   
   coord_cartesian(ylim=c(-20,60))+
   scale_y_continuous(
@@ -58,11 +76,10 @@ p <- ggplot(data, aes(x=day)) +
     axis.title.y.right = element_text(color = "black", size=10)
   ) +
   
-  ggtitle(" Hometown Weather Data") +
+  ggtitle(" Hometown Weather and Streamflow Data") +
   ggeasy::easy_center_title() +
   
-  
-  scale_colour_manual(name ="",values = c("TMIN"="coral2", "TMAX"="cyan3", "PRCP"="darkolivegreen4"))
+  scale_colour_manual(name ="",values = c("TMIN"="coral2", "TMAX"="cyan3", "PRCP"="darkolivegreen4" ))
 
 
 plot (p)
