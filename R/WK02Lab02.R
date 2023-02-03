@@ -32,7 +32,8 @@ pacman::p_load(EcoHydRology)
 
 setwd(datadir)
 
-myflowgage_id="0205551460"
+# My hometown flowgage id = 01658500
+myflowgage_id="01658500"
 myflowgage=get_usgs_gage(myflowgage_id,begin_date = "2015-01-01",
                          end_date = "2019-01-01")
 # For most watershed modelling purposes we normalize Q in mm/day for basins
@@ -146,8 +147,8 @@ zoomext=rbind(zoomext,zoomext+res(mydem)*100)
 zoomext=rbind(zoomext,zoomext-res(mydem)*100)
 zoomext=SpatialPoints(zoomext,proj4string = crs_utm)  
 zoomext2=myflowgage$gagepoint_utm@coords
-zoomext2=rbind(zoomext2,zoomext2+res(mydem)*10)
-zoomext2=rbind(zoomext2,zoomext2-res(mydem)*10)
+zoomext2=rbind(zoomext2,zoomext2+res(mydem)*30)
+zoomext2=rbind(zoomext2,zoomext2-res(mydem)*30)
 zoomext2=SpatialPoints(zoomext2,proj4string = crs_utm)  
 zoom(mydem,ext=zoomext2)
 plot(pourpoint,add=T,col="red")
@@ -249,6 +250,7 @@ plot(output, add=T, col ="red")
 
 outpt=read.shp("outlet.shp")
 approxpt=read.shp("ApproxOutlets.shp")
+
 
 plot(src)
 points(outpt$shp[2],outpt$shp[3],pch=19,col=2)
