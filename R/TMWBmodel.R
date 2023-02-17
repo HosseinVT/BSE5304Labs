@@ -122,10 +122,13 @@ TMWBdf$Qpred=Qpred # UPDATE vector BEFORE DETACHING
 detach(TMWBdf) # IMPORTANT TO DETACH
 rm(list=c("Qpred","S"))
 return(TMWBdf)
+
+NSE2=function(Yobs,Ysim){
+  return(1-sum((Yobs-Ysim)^2,na.rm=TRUE)/sum((Yobs-mean(Yobs, na.rm=TRUE))^2, na.rm=TRUE))
 }
 #Make a plot that has Qmm, P,and Qpred over time
 plot(TMWBdf$date,TMWBdf$P,col="black")
 lines(TMWBdf$date,TMWBdf$Qmm,type = "l",col="red")
 lines(TMWBdf$date,TMWBdf$Qpred,col="blue")
 plot(TMWBdf$Qmm,TMWBdf$Qpred)
-
+}
