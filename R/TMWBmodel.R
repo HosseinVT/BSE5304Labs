@@ -63,11 +63,11 @@ TMWBdf$Qpred=Qpred # UPDATE vector BEFORE DETACHING
 rm(list=c("S","Qpred"))
 View(TMWBdf)
 dev.off()
-#plot(TMWBdf$date,TMWBdf$Qmm,col="black",ylab ="Qmm(mm)",xlab="date",type="l")
-#lines(TMWBdf$date,TMWBdf$Qpred,col="blue",type="l", 
- #     xlab = "", ylab = "")
-#legend("topright", c("Qmm(mm)", "Qpred(mm)"), col = c("black", "blue"),
- #      lty = 1:2, cex = 0.8)
+plot(TMWBdf$date,TMWBdf$Qmm,col="black",ylab ="Qmm(mm)",xlab="date",type="l")
+lines(TMWBdf$date,TMWBdf$Qpred,col="blue",type="l", 
+      xlab = "", ylab = "")
+legend("topright", c("Qmm(mm)", "Qpred(mm)"), col = c("black", "blue"),
+       lty = 1:2, cex = 0.8)
 
 
 TMWBdf$AWC=(FldCap-WiltPt)*Z # 
@@ -124,11 +124,8 @@ rm(list=c("Qpred","S"))
 return(TMWBdf)
 }
 #Make a plot that has Qmm, P,and Qpred over time
-#plot(TMWBdf$date,TMWBdf$P,col="black")
-#lines(TMWBdf$date,TMWBdf$Qmm,type = "l",col="red")
-#lines(TMWBdf$date,TMWBdf$Qpred,col="blue")
-#plot(TMWBdf$Qmm,TMWBdf$Qpred)
+plot(TMWBdf$date,TMWBdf$P,col="black")
+lines(TMWBdf$date,TMWBdf$Qmm,type = "l",col="red")
+lines(TMWBdf$date,TMWBdf$Qpred,col="blue")
+plot(TMWBdf$Qmm,TMWBdf$Qpred)
 
-NSE=function(Yobs,Ysim){
-  return(1-sum((Yobs-Ysim)^2,na.rm=TRUE)/sum((Yobs-mean(Yobs, na.rm=TRUE))^2, na.rm=TRUE))
-}
