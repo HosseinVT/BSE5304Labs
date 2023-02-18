@@ -81,4 +81,3 @@ return(CNmodeldf)
 
 
 
-mean(CNmodeldf$Qpred)
