@@ -9,9 +9,20 @@ PROJECT_PATH = File.dirname(__FILE__)
 DB_NAME = "your_database.icmm" # Change this to your database filename
 DB_FILE = File.join(PROJECT_PATH, DB_NAME)
 
-MODEL_GROUP_PATH = ">MODG~Model group"
-NETWORK_PATH = "#{MODEL_GROUP_PATH}>NNET~Model network" # Adjust if needed
-LEVEL_PATH = "#{MODEL_GROUP_PATH}>LEV~Level"            # Adjust if needed
+MODEL_GROUP_PATH_CANDIDATES = [
+  ">MODG~Model group",
+  ">MODG~Model Group"
+].freeze
+
+NETWORK_PATH_CANDIDATES = [
+  ">MODG~Model group>NNET~Model network",
+  ">MODG~Model Group>NNET~Model network"
+].freeze
+
+LEVEL_PATH_CANDIDATES = [
+  ">MODG~Model group>LEV~Level",
+  ">MODG~Model Group>LEV~Level"
+].freeze
 RAINFALL_EVENT_ID = 1
 
 def fetch_latest_commit_id(network)
@@ -28,6 +39,14 @@ def fetch_latest_commit_id(network)
   end
 
   nil
+end
+
+def first_existing_model_object(db, candidates)
+  candidates.each do |path|
+    obj = db.model_object(path)
+    return [obj, path] unless obj.nil?
+  end
+  [nil, nil]
 end
 
 def validate_base_scenario(network, scenario_name = "Base")
@@ -63,12 +82,12 @@ rescue StandardError => e
   false
 end
 
-def build_run_params
+def build_run_params(level_path)
   {
     "ExitOnFailedInit" => true,
     "Duration" => 14, # 14 hours
     "DurationUnit" => "Hours",
-    "Level" => LEVEL_PATH,
+    "Level" => level_path,
     "ResultsMultiplier" => 300,
     "TimeStep" => 1,
     "StorePRN" => true,
@@ -81,11 +100,18 @@ begin
   db = WSApplication.open(DB_FILE, false)
   raise "Could not open database: #{DB_FILE}" if db.nil?
 
-  group = db.model_object(MODEL_GROUP_PATH)
-  raise "Model group not found: #{MODEL_GROUP_PATH}" if group.nil?
+  group, model_group_path = first_existing_model_object(db, MODEL_GROUP_PATH_CANDIDATES)
+  raise "Model group not found. Tried: #{MODEL_GROUP_PATH_CANDIDATES.join(', ')}" if group.nil?
 
-  network = db.model_object(NETWORK_PATH)
-  raise "Network not found: #{NETWORK_PATH}" if network.nil?
+  network, network_path = first_existing_model_object(db, NETWORK_PATH_CANDIDATES)
+  raise "Network not found. Tried: #{NETWORK_PATH_CANDIDATES.join(', ')}" if network.nil?
+
+  _, level_path = first_existing_model_object(db, LEVEL_PATH_CANDIDATES)
+  raise "Level object not found. Tried: #{LEVEL_PATH_CANDIDATES.join(', ')}" if level_path.nil?
+
+  puts "Using model group path: #{model_group_path}"
+  puts "Using network path: #{network_path}"
+  puts "Using level path: #{level_path}"
 
   latest_commit_id = fetch_latest_commit_id(network)
   puts "Using latest network commit: #{latest_commit_id.nil? ? "default/latest" : latest_commit_id}"
@@ -93,12 +119,12 @@ begin
   validate_base_scenario(network)
 
   run_name = "Run_Latest_#{Time.now.strftime('%Y%m%d_%H%M%S')}"
-  run_params = build_run_params
+  run_params = build_run_params(level_path)
 
   begin
     run = group.new_run(
       run_name,
-      NETWORK_PATH,
+        network_path,
       latest_commit_id, # Explicit commit ID when available
       RAINFALL_EVENT_ID,
       "Auto-created from latest network commit",
@@ -110,7 +136,7 @@ begin
       validate_base_scenario(network)
       run = group.new_run(
         run_name,
-        NETWORK_PATH,
+        network_path,
         latest_commit_id,
         RAINFALL_EVENT_ID,
         "Auto-created from latest network commit (retry)",
